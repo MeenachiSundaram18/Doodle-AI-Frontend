@@ -36,6 +36,27 @@ function DocumentUpload() {
     }
   };
 
+  const handleDownload = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/download");
+
+      if (!response.ok) {
+        throw new Error("Error downloading file");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "features.txt";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error("Error downloading file:", error);
+    }
+  };
+
   return (
     <div>
       <h2>Upload a Document</h2>
@@ -43,6 +64,8 @@ function DocumentUpload() {
         <input type="file" onChange={handleFileChange} />
         <button type="submit">Upload</button>
       </form>
+      <button onClick={handleDownload}>Download Features as Text File</button>
+
       {result && (
         <div>
           <h3>Document Analysis Result</h3>
