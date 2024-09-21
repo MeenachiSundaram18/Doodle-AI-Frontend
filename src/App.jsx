@@ -6,6 +6,8 @@ function MainUploader() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const [responseStatus, setResponseStatus] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
 
   const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB limit
 
@@ -21,8 +23,11 @@ function MainUploader() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!file) return;
-
+    if (!file) {
+      console.log("intoid");
+      alert("please choose the file!");
+      return;
+    }
     setIsUploading(true); // Disable upload button
     const formData = new FormData();
     formData.append("file", file);
@@ -37,7 +42,16 @@ function MainUploader() {
         throw new Error("Error uploading file");
       }
 
-      const data = await response.json();
+      let data;
+      if (response.status === 200) {
+        setSuccessMsg("file data extracted successfully!");
+        setResponseStatus("success");
+        data = await response.json();
+      } else {
+        setResponseStatus("error");
+        setSuccessMsg("error in extracting file data!");
+      }
+
       setResult(data);
     } catch (error) {
       console.error("Error uploading file:", error);
@@ -126,10 +140,18 @@ function MainUploader() {
           type="submit"
           style={styles.uploadButton}
           onClick={handleSubmit}
-          disabled={!file || isUploading}
+          disabled={isUploading || successMsg}
         >
           {isUploading ? "Uploading..." : "Upload"}
         </button>
+        <div
+          style={{
+            fontWeight: "bold",
+            color: responseStatus === "success" ? "#00FF00" : "#ff3333",
+          }}
+        >
+          {successMsg}
+        </div>
         <button
           onClick={handleDownload}
           style={styles.downloadButton}
