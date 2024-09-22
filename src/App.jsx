@@ -24,11 +24,10 @@ function MainUploader() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!file) {
-      console.log("intoid");
       alert("please choose the file!");
       return;
     }
-    setIsUploading(true); // Disable upload button
+    setIsUploading(true);
     const formData = new FormData();
     formData.append("file", file);
 
@@ -41,7 +40,6 @@ function MainUploader() {
       if (!response.ok) {
         throw new Error("Error uploading file");
       }
-
       let data;
       if (response.status === 200) {
         setSuccessMsg("file data extracted successfully!");
@@ -52,6 +50,8 @@ function MainUploader() {
         setSuccessMsg("error in extracting file data!");
       }
 
+      // const convertedJSON = convertToJSON(data);
+      // console.log("convertedJSON", convertedJSON);
       setResult(data);
     } catch (error) {
       console.error("Error uploading file:", error);
@@ -95,6 +95,25 @@ function MainUploader() {
     setError("");
   };
 
+  // const convertToJSON = (response) => {
+  //   console.log("response", response);
+  //   const paragraphs = response[0].paragraphs;
+  //   const result = {};
+
+  //   for (let i = 0; i < paragraphs.length; i += 3) {
+  //     const key = paragraphs[i]?.text.trim();
+
+  //     if (key && paragraphs[i + 1] && paragraphs[i + 2]) {
+  //       result[key] = {
+  //         value: paragraphs[i + 1].text.trim(),
+  //         range: paragraphs[i + 2].text.trim(),
+  //       };
+  //     }
+  //   }
+
+  //   return result;
+  // };
+
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     maxSize: MAX_FILE_SIZE,
@@ -105,6 +124,7 @@ function MainUploader() {
     },
   });
 
+  console.log("result", result);
   return (
     <div style={styles.wrapper}>
       <div style={styles.container}>
@@ -122,7 +142,7 @@ function MainUploader() {
             <button
               onClick={handleViewFile}
               style={styles.viewButton}
-              disabled={isUploading}
+              // disabled={isUploading}
             >
               View File
             </button>
@@ -140,7 +160,7 @@ function MainUploader() {
           type="submit"
           style={styles.uploadButton}
           onClick={handleSubmit}
-          disabled={isUploading || successMsg}
+          disabled={isUploading}
         >
           {isUploading ? "Uploading..." : "Upload"}
         </button>
